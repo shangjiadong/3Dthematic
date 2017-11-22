@@ -1,6 +1,6 @@
 # 3D Thematic Map of Travel time to Portland International Airport
 
-> The 3D map GitHub Page can be found [here](https://shangjiadong.github.io/3Dthematic/index.html)
+> The 3D thematic map GitHub Page can be found [here](https://shangjiadong.github.io/3Dthematic/index.html)
 
 ## Introduction 
 
