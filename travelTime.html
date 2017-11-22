@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cesiumjs.org/releases/1.39/Build/Cesium/Widgets/widgets.css">
+    <link href="https://fonts.googleapis.com/css?family=Lobster|Open+Sans" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cesiumjs.org/releases/1.39/Build/Cesium/Cesium.js"></script>
+    <title> Noise Complaints in New York City (Jan. to Mar. 2017)</title>
+</head>
+
+<div id="cesiumContainer"></div>
+<div class="legend">
+    <h4> Travel Time to Portland International Airport </h4>
+    <p><b> Based on Evening Peak hour volume(2013) </b></p><br/>
+    <i style="background: #0c2c84"></i> <p> 90min+ </p>
+    <i style="background: #225ea8"></i> <p> 60min to 90min </p>
+    <i style="background: #1d91c0"></i> <p> 45min to 60min </p>
+    <i style="background: #41b6c4"></i> <p> 30min to 45min </p>
+    <i style="background: #7fcdbb"></i> <p> 15min to 30 </p>
+    <i style="background: #c7e9b4"></i> <p> 5min to 15min </p>
+    <i style="background: #ffffcc"></i> <p> 0 to 5min </p><br/>
+    <p> This 3D thematic map shows the the travel time from every zone to Portland International Airport in an evening peak hour in 2013. The data is generated through the VISSUM based on the model framework provided by Portland Metro. </p><br/>
+    <p> Virtual globe Lib: cesium.js | BaseMap: Mapbox | Travel Time: Shangjia Dong </p>
+    <p> Author: <a href="people.oregonstate.edu/~dongs">Shangjia Dong </a>| Ph.D Candidate | Oregon State University</p>
+    <p> Acknowledgement: Bo Zhao, Haizhong Wang </p>
+</div>
+<script>
+
+    //create a cesium view, and use the mapbox dark map as the base map.
+
+    var viewer = new Cesium.Viewer('cesiumContainer', {
+        imageryProvider : new Cesium.MapboxImageryProvider({
+            mapId : 'mapbox.light',
+            accessToken : 'pk.eyJ1Ijoic2hhbmdqaWEiLCJhIjoiY2o4eGYybHVtMjFpMTJ3cDhkNTlsNG1qeiJ9.eOP2kq4hzAJaTMg4Rqg5yA'
+        }),
+        terrainProvider: new Cesium.CesiumTerrainProvider({
+            url: '//assets.agi.com/stk-terrain/world'
+        }),
+        vrButton: false,  // virtual reality support
+        infoBox: false, // pick a feature and show its attributes
+        sceneModePicker: false, // 2d, 2.5d and 3d
+        navigationHelpButton: false,
+        baseLayerPicker : false,
+        fullscreenButton: false,
+        geocoder: false,
+        skyBox: false,
+        homeButton: false,
+        animation: false,
+        timeline: false
+    });
+
+    //    viewer.dataSources.removeAll();
+
+    // Set function for color.md ramp
+    function setColor(time){
+        return time > 5400 ? '#0c2c84' :
+            time > 3600 ?  '#225ea8' :
+                time > 2700 ? '#1d91c0':
+                    time > 1800 ? '#41b6c4':
+                        time > 900 ? '#7fcdbb' :
+                            time > 300 ?  '#c7e9b4' :
+                        '#ffffcc' ;
+    }
+
+    var dataSource = Cesium.GeoJsonDataSource.load('assets/basefile.geojson').then(
+        function(dataSource) {
+
+            var p = dataSource.entities.values;
+
+            for (var i = 0; i < p.length; i++) {
+
+                p[i].polygon.material = Cesium.Color.fromCssColorString(setColor(p[i].properties.Travel_Tim));
+                p[i].polygon.extrudedHeight = (p[i].properties.Travel_Tim /60)* (p[i].properties.Travel_Tim/60) * 5;
+                p[i].polygon.outline = false;
+            }
+
+            viewer.dataSources.add(dataSource);
+            viewer.zoomTo(dataSource);
+        }
+    );
+
+    // hide the credit banner, however you should credit the map libraries or data somewhere else.
+    document.getElementsByClassName("cesium-widget-credits")[0].style.visibility = "hidden";
+
+
+</script>
+</body>
+</html>
